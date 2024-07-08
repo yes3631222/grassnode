@@ -40,9 +40,9 @@ async def connect_to_wss(socks5_proxy, user_id):
                             {"id": str(uuid.uuid4()), "version": "1.0.0", "action": "PING", "data": {}})
                         logger.debug(send_message)
                         await websocket.send(send_message)
-                        await asyncio.sleep(60)  # Increased interval to reduce bandwidth usage
+                        await asyncio.sleep(30)  # Increased interval to reduce bandwidth usage
 
-                send_ping_task = asyncio.create_task(send_ping())
+                send_ping_task = asyncio.create_task(发送心跳())
                 try:
                     while True:
                         response = await websocket.recv()
@@ -82,14 +82,14 @@ async def connect_to_wss(socks5_proxy, user_id):
                 continue  # Continue to try to reconnect or handle other errors
 
 async def main():
-    _user_id = 'Replace Your User ID HERE'   # Replace Your User ID HERE 
+    _user_id = '2hgDdg3AAXJJ9ulDnuEnhOpgRDw'   # Replace Your User ID HERE 
     proxy_file = 'proxy.txt' # your Path to Proxy3.txt file 
     # formate => socks5://username:pass@ip:port
     with open(proxy_file, 'r') as file:
         all_proxies = file.read().splitlines()
 
-    active_proxies = random.sample(all_proxies, 100)  # Number of proxies to use
-    tasks = {asyncio.create_task(connect_to_wss(proxy, _user_id)): proxy for proxy in active_proxies}
+    active_proxies = random.sample(all_proxies, 1000)  # Number of proxies to use
+    tasks = {asyncio.create_task(心跳碰撞成功(proxy, _user_id)): proxy for proxy in active_proxies}
 
     while True:
         done, pending = await asyncio.wait(tasks.keys(), return_when=asyncio.FIRST_COMPLETED)
@@ -100,12 +100,12 @@ async def main():
                 active_proxies.remove(failed_proxy)
                 new_proxy = random.choice(all_proxies)
                 active_proxies.append(new_proxy)
-                new_task = asyncio.create_task(connect_to_wss(new_proxy, _user_id))
+                new_task = asyncio.create_task(心跳碰撞成功(new_proxy, _user_id))
                 tasks[new_task] = new_proxy  # Replace the task in the dictionary
             tasks.pop(task)  # Remove the completed task whether it succeeded or failed
         # Replenish the tasks if any have completed
         for proxy in set(active_proxies) - set(tasks.values()):
-            new_task = asyncio.create_task(connect_to_wss(proxy, _user_id))
+            new_task = asyncio.create_task(心跳碰撞成功(proxy, _user_id))
             tasks[new_task] = proxy
 
 def remove_proxy_from_list(proxy):
